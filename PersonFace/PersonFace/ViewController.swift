@@ -9,16 +9,17 @@
 import UIKit
 
 class ViewController: UIViewController {
+    
+    @IBOutlet weak var faceView: PersonFaceView! {
+        didSet{
+            GestureRecognizers()
+        }
+    }
 
-
-//    @IBOutlet weak var faceView: UIView!{
-//        didSet{
-//        }
-//    }
-//    private func GestureRecognizers(){
-//        faceView.addGestureRecognizer(UIPinchGestureRecognizer(target: faceView, action: #selector(getter: faceView)))
-//    }
-//    
+    private func GestureRecognizers() {
+        faceView.addGestureRecognizer(UIPinchGestureRecognizer(target: faceView, action: #selector(PersonFaceView.ZoomInOut(_:))))
+        faceView.addGestureRecognizer(UITapGestureRecognizer(target: faceView, action: #selector(PersonFaceView.tapToOpenEyes(_:))))
+    }
 
 }
 
