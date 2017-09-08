@@ -23,7 +23,11 @@ import UIKit
     @IBInspectable
     var lineWidth: CGFloat = 0.9  { didSet{ setNeedsDisplay() } }
     @IBInspectable
-    private var eyesOpen: Bool = true { didSet{ setNeedsDisplay()}}
+    var eyeLashWidth: CGFloat = 2  { didSet{ setNeedsDisplay() } }
+    @IBInspectable
+    var eyesOpen: Bool = true { didSet{ setNeedsDisplay()}}
+    @IBInspectable
+    var MouthCurve: Double = 1.0
     private var beizerPath = UIBezierPath()
     private var fullCircle = CGFloat.pi
     private var circleCenter: CGPoint{
@@ -54,7 +58,27 @@ import UIKit
         let eyeCenter = CenterOfEye(eye)
         let eyeRadius = headRadius / Constants.EyeRadius
         if eyesOpen {
-            beizerPath = UIBezierPath(arcCenter: eyeCenter, radius: eyeRadius, startAngle: 0, endAngle: fullCircle * 2, clockwise: true)
+            beizerPath = UIBezierPath(arcCenter: eyeCenter, radius: eyeRadius + 10, startAngle: 0, endAngle: fullCircle * 2, clockwise: true)
+        }else{
+            beizerPath.move(to: CGPoint(x: eyeCenter.x - eyeRadius, y: eyeCenter.y))
+            beizerPath.addLine(to: CGPoint(x: eyeCenter.x + eyeRadius, y: eyeCenter.y))
+        }
+        beizerPath.lineWidth = lineWidth
+        colorforEyes.set()
+        return beizerPath
+    }
+    private func eyesIris(_ iris: PersonFaceView.Eye) -> UIBezierPath {
+        func centerOfEye(_ eye: Eye) -> CGPoint {
+            let eyeOffSet = headRadius / Constants.EyeOffSet
+            var eyeCenter = circleCenter
+            eyeCenter.y -= eyeOffSet
+            eyeCenter.x += ((eye == .left) ? -1 : 1) * eyeOffSet
+            return eyeCenter
+        }
+        let eyeCenter = centerOfEye(iris)
+        let eyeRadius = headRadius / Constants.EyeRadius
+        if eyesOpen {
+            beizerPath = UIBezierPath(arcCenter: eyeCenter, radius: eyeRadius - 7, startAngle: 0, endAngle: fullCircle * 2, clockwise: true)
         }else{
             beizerPath.move(to: CGPoint(x: eyeCenter.x - eyeRadius, y: eyeCenter.y))
             beizerPath.addLine(to: CGPoint(x: eyeCenter.x + eyeRadius, y: eyeCenter.y))
@@ -64,45 +88,79 @@ import UIKit
         return beizerPath
     }
     //Path for nose
-    func nose() -> UIBezierPath {
+    private func nose() -> UIBezierPath {
         let height = circleCenter.y
         let width = circleCenter.x
         beizerPath = UIBezierPath()
         
         beizerPath.move(to: CGPoint(x: bounds.midX, y: bounds.midY))
-        beizerPath.addLine(to: CGPoint(x: width + 50, y: height + 50))
-        beizerPath.addLine(to: CGPoint(x: width - 50, y: height + 50))
+        beizerPath.addLine(to: CGPoint(x: width + 30, y: height + 30))
+        beizerPath.addLine(to: CGPoint(x: width - 30, y: height + 30))
         beizerPath.close()
         beizerPath.lineWidth = lineWidth
-        colorforNose.setFill()
+        //colorforNose.setFill()
         return beizerPath
     }
     //Path for mouth
-    func mouth() -> UIBezierPath {
+    private func mouth() -> UIBezierPath {
         let width = headRadius / Constants.MouthWidth
         let height = headRadius / Constants.MouthHeight
         let offSet = headRadius / Constants.MouthOffSet
         let mouthLine = CGRect(x: circleCenter.x - width / 2, y: circleCenter.y + offSet, width: width, height: height)
         let startPoint =  CGPoint(x: mouthLine.minX, y: mouthLine.midY)
         let endPoint = CGPoint(x: mouthLine.maxX, y: mouthLine.midY)
-        let smileOffSet = CGFloat(max(-1,min(Constants.MouthCurve, 1))) * mouthLine.height
+        let smileOffSet = CGFloat(max(-1,min(MouthCurve, 1))) * mouthLine.height
         let cp1 = CGPoint(x: startPoint.x + mouthLine.width / 3, y: startPoint.y + smileOffSet)
         let cp2 = CGPoint(x: endPoint.x - mouthLine.width / 3, y: startPoint.y + smileOffSet)
         
-        //beizerPath = UIBezierPath(rect: mouthLine)
         beizerPath.move(to: startPoint)
         beizerPath.addCurve(to: endPoint, controlPoint1: cp1, controlPoint2: cp2)
+        beizerPath.addLine(to: startPoint)
         beizerPath.lineWidth = lineWidth
         return beizerPath
     }
-    
+    private func tougue() -> UIBezierPath {
+        let startPoint = CGPoint(x: 10, y:  50)
+        let endPoint = CGPoint(x: 50, y: 85)
+        let cp1 = CGPoint()
+        let cp2 = CGPoint()
+        
+        beizerPath.move(to: startPoint)
+        beizerPath.addCurve(to: endPoint, controlPoint1: cp1, controlPoint2: cp2)
+        beizerPath.lineWidth = lineWidth
+
+        return beizerPath
+    }
+    private func leftEyelash() -> UIBezierPath {
+        let startPoint = CGPoint(x: 170, y: 250)
+        let endPoint = CGPoint(x: 80, y: 270)
+        let cp1 = CGPoint(x: 110, y: 200)
+        beizerPath.move(to: startPoint)
+        beizerPath.addQuadCurve(to: endPoint, controlPoint: cp1)
+        beizerPath.lineWidth = eyeLashWidth
+        return beizerPath
+    }
+    private func rightEyelash() -> UIBezierPath {
+        let startPoint = CGPoint(x: 210, y: 250)
+        let endPoint = CGPoint(x: 300, y: 270)
+        let cp1 = CGPoint(x: 270, y: 200)
+        beizerPath.move(to: startPoint)
+        beizerPath.addQuadCurve(to: endPoint, controlPoint: cp1)
+        beizerPath.lineWidth = eyeLashWidth
+        return beizerPath
+    }
     override func draw(_ rect: CGRect) {
         // Drawing code
         roundHead().stroke()
+        leftEyelash().stroke()
+        rightEyelash().stroke()
         eyes(.left).stroke()
+        eyesIris(.left).stroke()
         eyes(.right).stroke()
+        eyesIris(.right).stroke()
         nose().fill()
         mouth().stroke()
+        //tougue().stroke()
     }
     func ZoomInOut(_ recognizer:UIPinchGestureRecognizer) {
         switch recognizer.state {
@@ -114,21 +172,11 @@ import UIKit
         }
     }
     
-    func tapToOpenEyes(_ recognizer: UITapGestureRecognizer) {
-        switch recognizer.state {
-        case .ended:
-             break
-        default:
-            break
-        }
-    }
-    
     struct Constants {
         static let EyeOffSet: CGFloat = 3
         static let EyeRadius: CGFloat = 10
         static let MouthOffSet: CGFloat = 2.5
         static let MouthWidth: CGFloat = 1
         static let MouthHeight: CGFloat = 5
-        static let MouthCurve: Double = 1.0
     }
 }

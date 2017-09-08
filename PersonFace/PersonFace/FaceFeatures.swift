@@ -11,17 +11,13 @@ import Foundation
 struct FaceFeatures {
     
     let eyes: Eyes
-    let nose: Nose
     let mouth: Mouth
     
-    enum Eyes {
+    enum Eyes: Int {
         case open
         case closed
     }
-    enum Nose {
-        
-    }
-    enum Mouth {
+    enum Mouth: Int {
         case smile
         case frown
     }
