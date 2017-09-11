@@ -9,16 +9,23 @@
 import UIKit
 
 class FaceEmotionsViewController: UIViewController {
-    
-
-    
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destinationViewController.
-        // Pass the selected object to the new view controller.
+        var destinationViewController = segue.destination
+        if let navigationController = destinationViewController as? UINavigationController {
+            destinationViewController = navigationController.visibleViewController ?? destinationViewController
+            if let faceViewController = destinationViewController as? ViewController {
+                if let identifier = segue.identifier {
+                    if let expressions = faceEmotions[identifier] {
+                        faceViewController.expression = expressions
+                        faceViewController.navigationItem.title = (sender as? UIButton)?.currentTitle
+                    }
+                }
+            }
+        }
     }
- 
-
+    private let faceEmotions: [String: FaceFeatures] = [
+        "smile" : FaceFeatures(eyes: .open, mouth: .smile),
+        "frown" : FaceFeatures(eyes: .open, mouth: .frown),
+        "neutral" : FaceFeatures(eyes: .closed, mouth: .neutral)
+    ]
 }

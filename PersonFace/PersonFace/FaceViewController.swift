@@ -10,10 +10,11 @@ import UIKit
 
 class ViewController: UIViewController {
     
-    var expression = FaceFeatures(eyes: .open, mouth: .frown) { didSet{ updateExpession() }}
+    var expression = FaceFeatures(eyes: .closed, mouth: .neutral) { didSet{ updateExpession() }}
+    var blinkingEyes = false { didSet { blinkEyesIfNeeded() }}
     @IBOutlet weak var faceView: PersonFaceView! {
         didSet{
-            GestureRecognizers()
+            gestureRecognizers()
             updateExpession()
         }
     }
@@ -33,7 +34,7 @@ class ViewController: UIViewController {
         }
     }
     
-    private func GestureRecognizers() {
+    private func gestureRecognizers() {
         faceView.addGestureRecognizer(UIPinchGestureRecognizer(target: faceView, action: #selector(PersonFaceView.ZoomInOut(_:))))
         let tap = UITapGestureRecognizer(target: self, action: #selector(tapToCloseEyes(_:)))
         tap.numberOfTapsRequired = 1
@@ -43,16 +44,62 @@ class ViewController: UIViewController {
     private func updateExpession(){
         switch expression.eyes {
         case .open:
-            faceView.eyesOpen = true
+            faceView?.eyesOpen = true
         case .closed:
-            faceView.eyesOpen = false
+            faceView?.eyesOpen = false
         }
-        faceView.MouthCurve = mouthCurves[expression.mouth] ?? 0.0
+        faceView?.MouthCurve = mouthCurves[expression.mouth] ?? 0.0
     }
     private let mouthCurves = [
         FaceFeatures.Mouth.smile: 1.0,
-        FaceFeatures.Mouth.frown: -1.0
+        FaceFeatures.Mouth.frown: -1.0,
+        FaceFeatures.Mouth.neutral: 0.0
     ]
-
+    private struct blinkTimeDuration {
+        static let closedDuration: TimeInterval = 0.5
+        static let openDuration: TimeInterval = 3.5
+    }
+    private func blinkEyesIfNeeded(){
+        if blinkingEyes {
+            faceView.eyesOpen = false
+            Timer.scheduledTimer(withTimeInterval: blinkTimeDuration.closedDuration, repeats: false, block: { (timer) in
+                self.faceView.eyesOpen = true
+                Timer.scheduledTimer(withTimeInterval: blinkTimeDuration.openDuration, repeats: false, block: { (timer) in
+                    self.blinkEyesIfNeeded()
+                })
+            })
+        }
+    }
+    private struct HeadShake {
+        static let duration: TimeInterval = 0.3
+        static let angle = CGFloat.pi / 4
+    }
+    private func rotate(_ angle: CGFloat) {
+        faceView.transform = faceView.transform.rotated(by: angle)
+    }
+    private func rotateHead() {
+        UIView.animate(withDuration: HeadShake.duration, animations: {
+            self.rotate(HeadShake.angle)}, completion: { finished in
+            if finished {
+                UIView.animate(withDuration: HeadShake.duration, animations: { self.rotate(-HeadShake.angle * 2)}, completion: { finished in
+                    UIView.animate(withDuration: HeadShake.duration, animations: {
+                        self.rotate(HeadShake.angle)
+                    })
+                })
+            }
+        })
+    }
+    @IBAction func rotateHead(_ sender: UISwipeGestureRecognizer) {
+        rotateHead()
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        blinkingEyes = true
+    }
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        blinkingEyes = false
+    }
 }
 

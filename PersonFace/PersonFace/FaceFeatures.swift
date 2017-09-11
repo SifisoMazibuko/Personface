@@ -20,5 +20,6 @@ struct FaceFeatures {
     enum Mouth: Int {
         case smile
         case frown
+        case neutral
     }
 }
