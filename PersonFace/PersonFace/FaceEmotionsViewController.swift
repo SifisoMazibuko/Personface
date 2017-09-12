@@ -24,8 +24,8 @@ class FaceEmotionsViewController: UIViewController {
         }
     }
     private let faceEmotions: [String: FaceFeatures] = [
-        "smile" : FaceFeatures(eyes: .open, mouth: .smile),
-        "frown" : FaceFeatures(eyes: .open, mouth: .frown),
-        "neutral" : FaceFeatures(eyes: .closed, mouth: .neutral)
+        "smile" : FaceFeatures(eyes: .open, mouth: .smile, faceColor: .happy),
+        "frown" : FaceFeatures(eyes: .open, mouth: .frown, faceColor: .angry ),
+        "neutral" : FaceFeatures(eyes: .closed, mouth: .neutral, faceColor: .normal)
     ]
 }

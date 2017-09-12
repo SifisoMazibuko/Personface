@@ -10,7 +10,7 @@ import UIKit
 
 class ViewController: UIViewController {
     
-    var expression = FaceFeatures(eyes: .closed, mouth: .neutral) { didSet{ updateExpession() }}
+    var expression = FaceFeatures(eyes: .closed, mouth: .neutral, faceColor: .happy) { didSet{ updateExpession() }}
     var blinkingEyes = false { didSet { blinkEyesIfNeeded() }}
     @IBOutlet weak var faceView: PersonFaceView! {
         didSet{
@@ -28,7 +28,7 @@ class ViewController: UIViewController {
             }else{
                 eyes = .closed
             }
-            expression = FaceFeatures(eyes: eyes, mouth: expression.mouth)
+            expression = FaceFeatures(eyes: eyes, mouth: expression.mouth, faceColor: expression.faceColor)
         default:
             break
         }
@@ -49,11 +49,17 @@ class ViewController: UIViewController {
             faceView?.eyesOpen = false
         }
         faceView?.MouthCurve = mouthCurves[expression.mouth] ?? 0.0
+        faceView?.colorforHead = faceColors[expression.faceColor] ?? UIColor.red
     }
     private let mouthCurves = [
         FaceFeatures.Mouth.smile: 1.0,
         FaceFeatures.Mouth.frown: -1.0,
         FaceFeatures.Mouth.neutral: 0.0
+    ]
+    private let faceColors = [
+        FaceFeatures.FaceColor.happy: UIColor.yellow,
+        FaceFeatures.FaceColor.angry: UIColor.red,
+        FaceFeatures.FaceColor.normal: UIColor.orange
     ]
     private struct blinkTimeDuration {
         static let closedDuration: TimeInterval = 0.5

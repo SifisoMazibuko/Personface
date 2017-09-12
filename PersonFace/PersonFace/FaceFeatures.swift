@@ -12,6 +12,7 @@ struct FaceFeatures {
     
     let eyes: Eyes
     let mouth: Mouth
+    let faceColor: FaceColor
     
     enum Eyes: Int {
         case open
@@ -21,5 +22,10 @@ struct FaceFeatures {
         case smile
         case frown
         case neutral
+    }
+    enum FaceColor {
+        case happy
+        case angry
+        case normal
     }
 }

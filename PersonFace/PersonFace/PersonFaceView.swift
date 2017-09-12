@@ -15,26 +15,18 @@ import UIKit
     @IBInspectable
     var colorforHead: UIColor = .yellow { didSet{ setNeedsDisplay() } }
     @IBInspectable
-    var colorforEyes: UIColor = .blue { didSet{ setNeedsDisplay() } }
-    @IBInspectable
-    var colorforEyeIris: UIColor = .blue { didSet{ setNeedsDisplay() } }
-    @IBInspectable
-    var colorforNose: UIColor = .green { didSet{ setNeedsDisplay() } }
-    @IBInspectable
-    var colorforMouth: UIColor = .darkGray { didSet{ setNeedsDisplay() } }
-    @IBInspectable
     var colorforEyeBrows: UIColor = .black { didSet{ setNeedsDisplay() } }
     @IBInspectable
     var lineWidth: CGFloat = 1.5  { didSet{ setNeedsDisplay() } }
     @IBInspectable
-    var eyeLashWidth: CGFloat = 2  { didSet{ setNeedsDisplay() } }
+    var eyeBrowsWidth: CGFloat = 2.0  { didSet{ setNeedsDisplay() } }
     @IBInspectable
     var eyesOpen: Bool = true { didSet{ setNeedsDisplay()}}
     @IBInspectable
     var MouthCurve: Double = 1.0
     private var beizerPath = UIBezierPath()
     private var fullCircle = CGFloat.pi
-    private var circleCenter: CGPoint{
+    private var circleCenter: CGPoint {
         return CGPoint(x: bounds.midX, y: bounds.midY)
     }
     private var headRadius: CGFloat{
@@ -53,6 +45,10 @@ import UIKit
         case left
     }
     private enum EyeBrows {
+        case right
+        case left
+    }
+    private enum EyeIris {
         case right
         case left
     }
@@ -82,8 +78,8 @@ import UIKit
         beizerPath.lineWidth = lineWidth
         return beizerPath
     }
-    private func eyesIris(_ iris: PersonFaceView.Eye) -> UIBezierPath {
-        func centerOfEye(_ eye: Eye) -> CGPoint {
+    private func eyesIris(_ iris: PersonFaceView.EyeIris) -> UIBezierPath {
+        func centerOfEye(_ eye: EyeIris) -> CGPoint {
             let eyeOffSet = headRadius / Constants.EyeOffSet
             var eyeCenter = circleCenter
             eyeCenter.y -= eyeOffSet
@@ -125,7 +121,6 @@ import UIKit
         beizerPath.move(to: startPoint)
         beizerPath.addCurve(to: endPoint, controlPoint1: cp1, controlPoint2: cp2)
         beizerPath.lineWidth = lineWidth
-        colorforMouth.set()
         return beizerPath
     }
     private func eyebrows(_ eyebrows: PersonFaceView.EyeBrows) -> UIBezierPath {
@@ -139,7 +134,7 @@ import UIKit
         let eyeCenter = centerOfEye(eyebrows)
         let eyeRadius = headRadius / Constants.EyeRadius
         beizerPath = UIBezierPath(arcCenter: eyeCenter, radius: eyeRadius + 13, startAngle: 0, endAngle: fullCircle, clockwise: false)
-        beizerPath.lineWidth = eyeLashWidth
+        beizerPath.lineWidth = eyeBrowsWidth
         colorforEyeBrows.set()
         return beizerPath
     }

@@ -12,12 +12,6 @@
         <!--View Controller-->
         <scene sceneID="tne-QT-ifu">
             <objects>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
-                <swipeGestureRecognizer direction="right" id="PqY-v8-o2b">
-                    <connections>
-                        <action selector="rotateHead:" destination="BYZ-38-t0r" id="57u-Vo-nFm"/>
-                    </connections>
-                </swipeGestureRecognizer>
                 <viewController id="BYZ-38-t0r" customClass="ViewController" customModule="PersonFace" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="y3c-jy-aDJ"/>
@@ -37,8 +31,14 @@
                         <outlet property="faceView" destination="8bC-Xf-vdC" id="QGu-Vb-q2C"/>
                     </connections>
                 </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
+                <swipeGestureRecognizer direction="right" id="PqY-v8-o2b">
+                    <connections>
+                        <action selector="rotateHead:" destination="BYZ-38-t0r" id="57u-Vo-nFm"/>
+                    </connections>
+                </swipeGestureRecognizer>
             </objects>
-            <point key="canvasLocation" x="2512.8000000000002" y="791.15442278860576"/>
+            <point key="canvasLocation" x="2097" y="774"/>
         </scene>
         <!--Split View Controller-->
         <scene sceneID="AI3-zX-uN4">
@@ -89,7 +89,7 @@
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Cgc-c9-x4L" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1573.5999999999999" y="791.15442278860576"/>
+            <point key="canvasLocation" x="513" y="746"/>
         </scene>
         <!--Emotions-->
         <scene sceneID="GzB-kS-xsJ">
